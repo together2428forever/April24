@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Birthday Surprise</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+            background-color: #ffeff5; /* Soft pink background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* --- NEW: SUSPENSE INTRO SCREEN --- */
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #111; /* Dark background for suspense */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50; /* Keeps it on top of everything */
+            color: white;
+            transition: opacity 1.5s ease-out; /* Smooth fade out */
+        }
+
+        #intro-text {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+
+        #reveal-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background-color: #d81b60;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(216, 27, 96, 0.6);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #reveal-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(216, 27, 96, 0.9);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        /* --- UPDATED: HIDDEN INITIALLY --- */
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            opacity: 0; /* Hidden initially */
+            transition: opacity 3s ease-in; /* Slow fade in */
+        }
+
+        #wish-container {
+            position: absolute;
+            top: 15%;
+            width: 100%;
+            text-align: center;
+            pointer-events: none; 
+            color: #d81b60;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+            opacity: 0; /* Hidden initially */
+            transform: translateY(-20px);
+            transition: opacity 3s ease-in, transform 3s ease-out;
+        }
+
+        /* Adds a nice drop-down effect when revealed */
+        #wish-container.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        p {
+            font-size: 2rem;
+            margin: 10px 0 0 0;
+            font-weight: 500;
+        }
+
+
+        /* From Uiverse.io by SelfMadeSystem */ 
+.absolute {
+  position: absolute;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.loader {
+  display: flex;
+  margin: 0.25em 0;
+}
+
+.w-2 {
+  width: 0.5em;
+}
+
+.dash {
+  animation: dashArray 2s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+}
+
+.spin {
+  animation: spinDashArray 2s ease-in-out infinite,
+    spin 8s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes dashArray {
+  0% {
+    stroke-dasharray: 0 1 359 0;
+  }
+
+  50% {
+    stroke-dasharray: 0 359 1 0;
+  }
+
+  100% {
+    stroke-dasharray: 359 1 0 0;
+  }
+}
+
+@keyframes spinDashArray {
+  0% {
+    stroke-dasharray: 270 90;
+  }
+
+  50% {
+    stroke-dasharray: 0 360;
+  }
+
+  100% {
+    stroke-dasharray: 270 90;
+  }
+}
+
+@keyframes dashOffset {
+  0% {
+    stroke-dashoffset: 365;
+  }
+
+  100% {
+    stroke-dashoffset: 5;
+  }
+}
+
+@keyframes spin {
+  0% {
+    rotate: 0deg;
+  }
+
+  12.5%,
+  25% {
+    rotate: 270deg;
+  }
+
+  37.5%,
+  50% {
+    rotate: 540deg;
+  }
+
+  62.5%,
+  75% {
+    rotate: 810deg;
+  }
+
+  87.5%,
+  100% {
+    rotate: 1080deg;
+  }
+}
+
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="intro-screen">
+        <div id="intro-text">I have a surprise for you...</div>
+                <div class="loader">
+  <svg height="0" width="0" viewBox="0 0 64 64" class="absolute">
+    <defs class="s-xJBuHA073rTt" xmlns="http://www.w3.org/2000/svg">
+      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="b">
+        <stop class="s-xJBuHA073rTt" stop-color="#973BED"></stop>
+        <stop class="s-xJBuHA073rTt" stop-color="#007CFF" offset="1"></stop>
+      </linearGradient>
+      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="0" x2="0" y1="64" x1="0" id="c">
+        <stop class="s-xJBuHA073rTt" stop-color="#FFC800"></stop>
+        <stop class="s-xJBuHA073rTt" stop-color="#F0F" offset="1"></stop>
+        <animateTransform repeatCount="indefinite" keySplines=".42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1" keyTimes="0; 0.125; 0.25; 0.375; 0.5; 0.625; 0.75; 0.875; 1" dur="8s" values="0 32 32;-270 32 32;-270 32 32;-540 32 32;-540 32 32;-810 32 32;-810 32 32;-1080 32 32;-1080 32 32" type="rotate" attributeName="gradientTransform"></animateTransform>
+      </linearGradient>
+      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="d">
+        <stop class="s-xJBuHA073rTt" stop-color="#00E0ED"></stop>
+        <stop class="s-xJBuHA073rTt" stop-color="#00DA72" offset="1"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#b)" d="M 12,56 L 12,12 L 32,36 L 52,12 L 52,56" class="dash" pathLength="360"></path>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 18,12 L 18,52 C 50,52 58,40 58,32 C 58,24 50,12 18,12 Z" class="dash" pathLength="360"></path>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" style="--rotation-duration:0ms; --rotation-direction:normal;" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="10" stroke="url(#b)" d="M 32 32 m 0 -27 a 27 27 0 1 1 0 54 a 27 27 0 1 1 0 -54" class="spin" pathLength="360"></path>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 14,56 L 14,12 L 50,56 L 50,12" class="dash" pathLength="360"></path>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
+  </svg>
+</div>
+        <button id="reveal-btn">Open It</button>
+    </div>
+
+    <div id="wish-container">
+        <h1>Happy Birthday, Sombu!</h1>
+        <p>[Write your custom wish here. Hope you have a wonderful day!]</p>
+
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // --- NEW: UI Logic for the Button and Music ---
+        const introScreen = document.getElementById('intro-screen');
+        const revealBtn = document.getElementById('reveal-btn');
+        const bgMusic = document.getElementById('bg-music');
+        const wishContainer = document.getElementById('wish-container');
+        const canvasContainer = document.getElementById('canvas-container');
+
+        revealBtn.addEventListener('click', () => {
+            // 1. Play the music
+            bgMusic.play().catch(error => console.log("Audio play failed:", error));
+            
+            // 2. Fade out the dark intro screen
+            introScreen.style.opacity = '0';
+            
+            // 3. Remove intro screen from the page after it fades out
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+            }, 1500);
+
+            // 4. Fade in the Cake and the Text
+            canvasContainer.style.opacity = '1';
+            wishContainer.classList.add('revealed');
+        });
+
+
+        // --- 3D Scene Setup ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 2, 5);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true; 
+        controls.autoRotateSpeed = 2.0;
+
+        // Load the 3D Cake Model
+        const loader = new GLTFLoader();
+
+        loader.load(
+            'cake.glb', 
+            function (gltf) {
+                const cake = gltf.scene;
+                
+                let box = new THREE.Box3().setFromObject(cake);
+                let size = box.getSize(new THREE.Vector3());
+
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 3 / (maxDim || 1); 
+                cake.scale.set(scale, scale, scale);
+
+                box = new THREE.Box3().setFromObject(cake);
+                const center = box.getCenter(new THREE.Vector3());
+
+                cake.position.x -= center.x;
+                cake.position.y -= center.y;
+                cake.position.z -= center.z;
+
+                cake.position.y -= 0.5;
+
+                controls.target.set(0, -0.5, 0);
+                controls.update();
+
+                scene.add(cake);
+            },
+            undefined,
+            function (error) {
+                console.error('An error happened loading the 3D model:', error);
+            }
+        );
+
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); 
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
