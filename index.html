@@ -8,195 +8,488 @@
         body {
             margin: 0;
             overflow: hidden; /* Hide scrollbars */
-            background-color: #ffeff5; /* Soft pink background */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100%;
+            height: 100vh;
+            /* Beautiful gradient background */
+            background: radial-gradient(
+                120% 120% at -5% 101%,
+                rgba(238, 174, 202, 1) 40%,
+                rgba(202, 179, 214, 1) 65%,
+                rgba(148, 201, 233, 1) 100%
+            );
         }
 
-        /* --- NEW: SUSPENSE INTRO SCREEN --- */
+        /* --- UPGRADED: SUSPENSE INTRO SCREEN --- */
         #intro-screen {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #111; /* Dark background for suspense */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 50; /* Keeps it on top of everything */
-            color: white;
-            transition: opacity 1.5s ease-out; /* Smooth fade out */
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            /* Deep, luxurious midnight purple-to-black gradient */
+            background: radial-gradient(circle at center, #2b1055 0%, #05010a 100%); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 50; 
+            color: #fdfaf6;
+            transition: opacity 1.5s ease-out; 
         }
 
         #intro-text {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            animation: pulse 2s infinite;
+            font-size: 2.5rem; margin-bottom: 30px; font-weight: 300; letter-spacing: 2px;
+            animation: pulse 2s infinite; text-align: center; padding: 0 20px;
+            /* Added a soft magical glow to the text */
+            text-shadow: 0 0 20px rgba(216, 27, 96, 0.8);
         }
 
-        #reveal-btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            background-color: #d81b60;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            box-shadow: 0 0 20px rgba(216, 27, 96, 0.6);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        #reveal-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(216, 27, 96, 0.9);
-        }
 
         @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
+            0% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 30px rgba(216, 27, 96, 1); }
+            100% { opacity: 0.6; }
         }
 
-        /* --- UPDATED: HIDDEN INITIALLY --- */
+
+        /* --- 3D CANVAS & WISH CONTAINER --- */
         #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-            opacity: 0; /* Hidden initially */
-            transition: opacity 3s ease-in; /* Slow fade in */
+            width: 100vw; height: 100vh; display: block;
+            opacity: 0; transition: opacity 3s ease-in; cursor: pointer; 
         }
 
         #wish-container {
-            position: absolute;
-            top: 15%;
-            width: 100%;
-            text-align: center;
-            pointer-events: none; 
-            color: #d81b60;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            position: absolute; top: 10%; width: 100%; text-align: center;
+            pointer-events: none; color: #d81b60; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
             z-index: 10;
-            opacity: 0; /* Hidden initially */
-            transform: translateY(-20px);
-            transition: opacity 3s ease-in, transform 3s ease-out;
-        }
-
-        /* Adds a nice drop-down effect when revealed */
-        #wish-container.revealed {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         h1 {
-            font-size: 4rem;
-            margin: 0;
-            font-weight: 800;
+            font-size: 4.5rem; margin: 0; font-weight: 800;
+            opacity: 0; transform: translateY(-20px); transition: opacity 2s ease-in, transform 2s ease-out;
         }
 
-        p {
-            font-size: 2rem;
-            margin: 10px 0 0 0;
-            font-weight: 500;
+        .msg-line {
+            font-size: 1.8rem; margin: 15px 0 0 0; font-weight: 500; color: #333;
+            opacity: 0; transform: translateY(10px); transition: opacity 2s ease-in, transform 2s ease-out;
+        }
+
+        .signature {
+            font-size: 1.5rem; font-style: italic; margin-top: 25px; color: #d81b60;
+        }
+
+        #wish-container.revealed h1 { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+        #wish-container.revealed #msg-1 { opacity: 1; transform: translateY(0); transition-delay: 2s; }
+        #wish-container.revealed #msg-2 { opacity: 1; transform: translateY(0); transition-delay: 4s; }
+        #wish-container.revealed #msg-3 { opacity: 1; transform: translateY(0); transition-delay: 6s; }
+
+        /* --- CUSTOM LOADER --- */
+        .absolute { position: absolute; }
+        .inline-block { display: inline-block; }
+        .loader { display: flex; margin: 0.25em 0; }
+        .w-2 { width: 0.5em; }
+        .dash { animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite; }
+        .spin { animation: spinDashArray 2s ease-in-out infinite, spin 8s ease-in-out infinite, dashOffset 2s linear infinite; transform-origin: center; }
+
+        @keyframes dashArray { 0% { stroke-dasharray: 0 1 359 0; } 50% { stroke-dasharray: 0 359 1 0; } 100% { stroke-dasharray: 359 1 0 0; } }
+        @keyframes spinDashArray { 0% { stroke-dasharray: 270 90; } 50% { stroke-dasharray: 0 360; } 100% { stroke-dasharray: 270 90; } }
+        @keyframes dashOffset { 0% { stroke-dashoffset: 365; } 100% { stroke-dashoffset: 5; } }
+        @keyframes spin { 0% { rotate: 0deg; } 12.5%, 25% { rotate: 270deg; } 37.5%, 50% { rotate: 540deg; } 62.5%, 75% { rotate: 810deg; } 87.5%, 100% { rotate: 1080deg; } }
+
+        /* --- NEW: NOTIFICATION HEART ICON --- */
+        #notification-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #d81b60;
+            border-radius: 50%;
+            display: none; /* Hidden until cake click */
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.5);
+            z-index: 40;
+            animation: heartBeat 1.5s infinite;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); box-shadow: 0 4px 25px rgba(216, 27, 96, 0.8); }
+            100% { transform: scale(1); }
         }
 
 
-        /* From Uiverse.io by SelfMadeSystem */ 
-.absolute {
-  position: absolute;
-}
+        /* From Uiverse.io by dexter-st */ 
+.btn-wrapper {
+  --dot-size: 6px;
+  --line-weight: 1px;
+  --line-distance: 0.9rem 1.1rem;
+  --animation-speed: 0.35s;
+  --dot-color: #666;
+  --line-color: #999;
 
-.inline-block {
-  display: inline-block;
-}
-
-.loader {
+  position: relative;
   display: flex;
-  margin: 0.25em 0;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  padding: var(--line-distance);
+  background-color: #0000;
+  transition: background-color 0.3s ease-in-out;
+  user-select: none;
 }
 
-.w-2 {
-  width: 0.5em;
+.btn-wrapper:has(.btn:hover) {
+  animation: backround-color-change calc(var(--animation-speed) * 4) ease-in-out
+    forwards;
 }
-
-.dash {
-  animation: dashArray 2s ease-in-out infinite,
-    dashOffset 2s linear infinite;
-}
-
-.spin {
-  animation: spinDashArray 2s ease-in-out infinite,
-    spin 8s ease-in-out infinite,
-    dashOffset 2s linear infinite;
-  transform-origin: center;
-}
-
-@keyframes dashArray {
-  0% {
-    stroke-dasharray: 0 1 359 0;
+@keyframes backround-color-change {
+  80% {
+    background-color: #0000;
   }
-
-  50% {
-    stroke-dasharray: 0 359 1 0;
-  }
-
   100% {
-    stroke-dasharray: 359 1 0 0;
+    background-color: #0095ff6d;
   }
 }
 
-@keyframes spinDashArray {
-  0% {
-    stroke-dasharray: 270 90;
-  }
+.btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8rem 1.25rem;
+  background-color: #ec8d08;
+  background-image: linear-gradient(#0000, #0004);
+  border: none;
 
-  50% {
-    stroke-dasharray: 0 360;
-  }
+  color: #0008;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
 
+  border-radius: 30% / 200%;
+  cursor: pointer;
+
+  box-shadow:
+    0 0 0px 1px #0003,
+    0px 1px 1px rgba(3, 7, 18, 0.02),
+    0px 5px 4px rgba(3, 7, 18, 0.04),
+    0px 12px 9px rgba(3, 7, 18, 0.06),
+    0px 20px 15px rgba(3, 7, 18, 0.08),
+    0px 32px 24px rgba(3, 7, 18, 0.1);
+
+  transition:
+    background-color 0.2s ease-in-out,
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out,
+    border-radius 0.3s ease-in-out,
+    border-color 0.2s ease-in-out;
+}
+
+.btn:hover {
+  background-color: #fff;
+  transform: scale(1.05);
+  border-radius: 10% / 200%;
+}
+.btn:active {
+  background-color: #9d00ff;
+  transform: scale(0.98);
+  border-radius: 20% / 200%;
+}
+
+.btn-svg {
+  margin-left: 0.5rem;
+  height: 24px;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #0007;
+  fill: #fffa;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn:hover .btn-svg {
+  stroke: #0008;
+  fill: #ff0000;
+}
+.btn:active .btn-svg {
+  stroke: #0009;
+  fill: #732fd4;
+}
+
+/* Dots */
+.dot {
+  position: absolute;
+  width: var(--dot-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--dot-color);
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.btn-wrapper:has(.btn:hover) .dot.top.left {
+  top: 50%;
+  left: 20%;
+  animation: move-top-left var(--animation-speed) ease-in-out forwards;
+}
+@keyframes move-top-left {
+  90% {
+    opacity: 0.6;
+  }
   100% {
-    stroke-dasharray: 270 90;
+    top: calc(var(--dot-size) * -0.5);
+    left: calc(var(--dot-size) * -0.5);
+    opacity: 1;
   }
 }
-
-@keyframes dashOffset {
-  0% {
-    stroke-dashoffset: 365;
+.btn-wrapper:has(.btn:hover) .dot.top.right {
+  top: 50%;
+  right: 20%;
+  animation: move-top-right var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 0.6);
+}
+@keyframes move-top-right {
+  80% {
+    opacity: 0.6;
   }
-
   100% {
-    stroke-dashoffset: 5;
+    top: calc(var(--dot-size) * -0.5);
+    right: calc(var(--dot-size) * -0.5);
+    opacity: 1;
   }
 }
-
-@keyframes spin {
-  0% {
-    rotate: 0deg;
+.btn-wrapper:has(.btn:hover) .dot.bottom.right {
+  bottom: 50%;
+  right: 20%;
+  animation: move-bottom-right var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 1.2);
+}
+@keyframes move-bottom-right {
+  80% {
+    opacity: 0.6;
   }
-
-  12.5%,
-  25% {
-    rotate: 270deg;
-  }
-
-  37.5%,
-  50% {
-    rotate: 540deg;
-  }
-
-  62.5%,
-  75% {
-    rotate: 810deg;
-  }
-
-  87.5%,
   100% {
-    rotate: 1080deg;
+    bottom: calc(var(--dot-size) * -0.5);
+    right: calc(var(--dot-size) * -0.5);
+    opacity: 1;
+  }
+}
+.btn-wrapper:has(.btn:hover) .dot.bottom.left {
+  bottom: 50%;
+  left: 20%;
+  animation: move-bottom-left var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 1.8);
+}
+@keyframes move-bottom-left {
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    bottom: calc(var(--dot-size) * -0.5);
+    left: calc(var(--dot-size) * -0.5);
+    opacity: 1;
   }
 }
 
+/* Lines */
+.line {
+  position: absolute;
+  transition: all 0.3s ease-in-out;
+}
+.line.horizontal {
+  height: var(--line-weight);
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #0000 0 calc(var(--line-weight) * 2),
+    var(--line-color) calc(var(--line-weight) * 2) calc(var(--line-weight) * 4)
+  );
+}
+.line.top {
+  top: calc(var(--line-weight) * -0.5);
+}
+.line.bottom {
+  bottom: calc(var(--line-weight) * -0.5);
+}
+.line.vertical {
+  width: var(--line-weight);
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    0deg,
+    #0000 0 calc(var(--line-weight) * 2),
+    var(--line-color) calc(var(--line-weight) * 2) calc(var(--line-weight) * 4)
+  );
+}
+.line.left {
+  left: calc(var(--line-weight) * -0.5);
+}
+.line.right {
+  right: calc(var(--line-weight) * -0.5);
+}
+
+.line.top {
+  transform-origin: top left;
+  transform: rotate(5deg) scaleX(0);
+}
+.btn-wrapper:has(.btn:hover) .line.top {
+  animation: draw-top var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 0.8);
+}
+@keyframes draw-top {
+  100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+}
+.line.bottom {
+  transform-origin: bottom right;
+  transform: rotate(5deg) scaleX(0);
+}
+.btn-wrapper:has(.btn:hover) .line.bottom {
+  animation: draw-bottom var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 2);
+}
+@keyframes draw-bottom {
+  100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+}
+
+.line.left {
+  transform-origin: bottom left;
+  transform: rotate(0deg) scaleY(0);
+}
+.btn-wrapper:has(.btn:hover) .line.left {
+  animation: draw-left var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 2.4);
+}
+@keyframes draw-left {
+  100% {
+    transform: rotate(0deg) scaleY(1);
+  }
+}
+
+.line.right {
+  transform-origin: top right;
+  transform: rotate(5deg) scaleY(0);
+}
+.btn-wrapper:has(.btn:hover) .line.right {
+  animation: draw-right var(--animation-speed) ease-in-out forwards;
+  animation-delay: calc(var(--animation-speed) * 1.4);
+}
+@keyframes draw-right {
+  100% {
+    transform: rotate(0deg) scaleY(1);
+  }
+}
+
+        /* --- NEW: MODAL OVERLAY & CARD --- */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none; /* Hidden initially */
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .card {
+            max-width: 320px;
+            border-width: 1px;
+            border-color: rgba(219, 234, 254, 1);
+            border-radius: 1rem;
+            background-color: rgba(255, 255, 255, 1);
+            padding: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background-color: #d81b60;
+            padding: 0.5rem;
+            color: rgba(255, 255, 255, 1);
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon svg { height: 1.2rem; width: 1.2rem; }
+
+        .alert {
+            font-weight: 600;
+            color: #374151;
+            margin: 0;
+            flex-grow: 1;
+            font-size: 1.1rem;
+        }
+
+        .closeButton {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .closeButton:hover { color: #4b5563; }
+
+        .message {
+            margin-top: 1rem;
+            color: #4b5563;
+            font-size: 0.95rem;
+            line-height: 1.4rem;
+        }
+
+        .actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .read, .mark-as-read {
+            display: inline-flex;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .read {
+            background-color: #d81b60;
+            color: #ffffff;
+        }
+
+        .read:hover { background-color: #be1855; }
+
+        .mark-as-read {
+            background-color: #fce7f3;
+            color: #d81b60;
+        }
+
+        .mark-as-read:hover { background-color: #fbcfe8; }
     </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -204,61 +497,112 @@
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
-    <div id="intro-screen">
+  <div id="intro-screen">
         <div id="intro-text">I have a surprise for you...</div>
-                <div class="loader">
-  <svg height="0" width="0" viewBox="0 0 64 64" class="absolute">
-    <defs class="s-xJBuHA073rTt" xmlns="http://www.w3.org/2000/svg">
-      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="b">
-        <stop class="s-xJBuHA073rTt" stop-color="#973BED"></stop>
-        <stop class="s-xJBuHA073rTt" stop-color="#007CFF" offset="1"></stop>
-      </linearGradient>
-      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="0" x2="0" y1="64" x1="0" id="c">
-        <stop class="s-xJBuHA073rTt" stop-color="#FFC800"></stop>
-        <stop class="s-xJBuHA073rTt" stop-color="#F0F" offset="1"></stop>
-        <animateTransform repeatCount="indefinite" keySplines=".42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1" keyTimes="0; 0.125; 0.25; 0.375; 0.5; 0.625; 0.75; 0.875; 1" dur="8s" values="0 32 32;-270 32 32;-270 32 32;-540 32 32;-540 32 32;-810 32 32;-810 32 32;-1080 32 32;-1080 32 32" type="rotate" attributeName="gradientTransform"></animateTransform>
-      </linearGradient>
-      <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="d">
-        <stop class="s-xJBuHA073rTt" stop-color="#00E0ED"></stop>
-        <stop class="s-xJBuHA073rTt" stop-color="#00DA72" offset="1"></stop>
-      </linearGradient>
-    </defs>
-  </svg>
+        
+        <div class="loader">
+            <svg height="0" width="0" viewBox="0 0 64 64" class="absolute">
+                <defs class="s-xJBuHA073rTt" xmlns="http://www.w3.org/2000/svg">
+                    <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="b">
+                        <stop class="s-xJBuHA073rTt" stop-color="#ff0844"></stop>
+                        <stop class="s-xJBuHA073rTt" stop-color="#ffb199" offset="1"></stop>
+                    </linearGradient>
+                    <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="0" x2="0" y1="64" x1="0" id="c">
+                        <stop class="s-xJBuHA073rTt" stop-color="#f6d365"></stop>
+                        <stop class="s-xJBuHA073rTt" stop-color="#fda085" offset="1"></stop>
+                        <animateTransform repeatCount="indefinite" keySplines=".42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1" keyTimes="0; 0.125; 0.25; 0.375; 0.5; 0.625; 0.75; 0.875; 1" dur="8s" values="0 32 32;-270 32 32;-270 32 32;-540 32 32;-540 32 32;-810 32 32;-810 32 32;-1080 32 32;-1080 32 32" type="rotate" attributeName="gradientTransform"></animateTransform>
+                    </linearGradient>
+                    <linearGradient class="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2="2" x2="0" y1="62" x1="0" id="d">
+                        <stop class="s-xJBuHA073rTt" stop-color="#c471f5"></stop>
+                        <stop class="s-xJBuHA073rTt" stop-color="#fa71cd" offset="1"></stop>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#b)" d="M 12,56 L 12,12 L 32,36 L 52,12 L 52,56" class="dash" pathLength="360"></path>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 18,12 L 18,52 C 50,52 58,40 58,32 C 58,24 50,12 18,12 Z" class="dash" pathLength="360"></path>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" style="--rotation-duration:0ms; --rotation-direction:normal;" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="10" stroke="url(#b)" d="M 32 32 m 0 -27 a 27 27 0 1 1 0 54 a 27 27 0 1 1 0 -54" class="spin" pathLength="360"></path>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 14,56 L 14,12 L 50,56 L 50,12" class="dash" pathLength="360"></path>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
+                <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
+            </svg>
+        </div>
+<div class="btn-wrapper">
+  <div class="line horizontal top"></div>
+  <div class="line vertical right"></div>
+  <div class="line horizontal bottom"></div>
+  <div class="line vertical left"></div>
 
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#b)" d="M 12,56 L 12,12 L 32,36 L 52,12 L 52,56" class="dash" pathLength="360"></path>
-  </svg>
+  <div class="dot top left"></div>
+  <div class="dot top right"></div>
+  <div class="dot bottom right"></div>
+  <div class="dot bottom left"></div>
 
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
-  </svg>
-
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 18,12 L 18,52 C 50,52 58,40 58,32 C 58,24 50,12 18,12 Z" class="dash" pathLength="360"></path>
-  </svg>
-
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" style="--rotation-duration:0ms; --rotation-direction:normal;" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="10" stroke="url(#b)" d="M 32 32 m 0 -27 a 27 27 0 1 1 0 54 a 27 27 0 1 1 0 -54" class="spin" pathLength="360"></path>
-  </svg>
-
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#c)" d="M 14,56 L 14,12 L 50,56 L 50,12" class="dash" pathLength="360"></path>
-  </svg>
-
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height="64" width="64" class="inline-block">
-    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="8" stroke="url(#d)" d="M 12,56 L 32,12 L 52,56 M 22,38 L 42,38" class="dash" pathLength="360"></path>
-  </svg>
+  <button class="btn" id="reveal-btn">
+    <span class="btn-text">Start</span>
+    <svg class="btn-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M17.6744 11.4075L15.7691 17.1233C15.7072 17.309 15.5586 17.4529 15.3709 17.5087L3.69348 20.9803C3.22819 21.1186 2.79978 20.676 2.95328 20.2155L6.74467 8.84131C6.79981 8.67588 6.92419 8.54263 7.08543 8.47624L12.472 6.25822C12.696 6.166 12.9535 6.21749 13.1248 6.38876L17.5294 10.7935C17.6901 10.9542 17.7463 11.1919 17.6744 11.4075Z"
+      ></path>
+      <path d="M3.2959 20.6016L9.65986 14.2376"></path>
+      <path
+        d="M17.7917 11.0557L20.6202 8.22724C21.4012 7.44619 21.4012 6.17986 20.6202 5.39881L18.4989 3.27749C17.7178 2.49645 16.4515 2.49645 15.6704 3.27749L12.842 6.10592"
+      ></path>
+      <path
+        d="M11.7814 12.1163C11.1956 11.5305 10.2458 11.5305 9.66004 12.1163C9.07426 12.7021 9.07426 13.6519 9.66004 14.2376C10.2458 14.8234 11.1956 14.8234 11.7814 14.2376C12.3671 13.6519 12.3671 12.7021 11.7814 12.1163Z"
+      ></path>
+    </svg>
+  </button>
 </div>
-        <button id="reveal-btn">Open It</button>
+
+
+
+
     </div>
 
     <div id="wish-container">
-        <h1>Happy Birthday, Sombu!</h1>
-        <p>[Write your custom wish here. Hope you have a wonderful day!]</p>
-
+        <h1>Happy Birthday, Sombu! 🎂</h1>
+        <p class="msg-line" id="msg-1">I am so incredibly proud of everything you do.</p>
+        <p class="msg-line" id="msg-2">Wishing you a year filled with happiness, success, and beautiful memories.</p>
+        <p class="msg-line signature" id="msg-3">- With all my love, [Your Name Here] ❤️</p>
     </div>
 
-    <div id="canvas-container"></div>
+    <div id="canvas-container" title="Click the cake for a surprise!"></div>
+
+    <div id="notification-icon" title="You have a new message!">🤍</div>
+
+    <div id="modal-overlay">
+        <div class="card">
+            <div class="header">
+                <span class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd"></path>
+                    </svg>
+                </span>
+                <p class="alert">New message!</p>
+                <button class="closeButton">x</button>
+            </div>
+
+            <p class="message">
+                I built this little website just to show how much you mean to me. I hope this surprise made you smile! Here's to making many more memories together. ✨
+            </p>
+
+            <div class="actions">
+                <a href="./gem.html" class="read">Take a Look</a>
+                <a href="#" class="mark-as-read">Mark as Read</a>
+            </div>
+        </div>
+    </div>
 
     <script type="importmap">
         {
@@ -274,35 +618,57 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-        // --- NEW: UI Logic for the Button and Music ---
+        let cakeModel = null;
+        let isBouncing = false;
+        let bounceTime = 0;
+
+        // --- UI Logic ---
         const introScreen = document.getElementById('intro-screen');
         const revealBtn = document.getElementById('reveal-btn');
         const bgMusic = document.getElementById('bg-music');
         const wishContainer = document.getElementById('wish-container');
         const canvasContainer = document.getElementById('canvas-container');
+        
+        // Notification Elements
+        const notificationIcon = document.getElementById('notification-icon');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const closeBtn = document.querySelector('.closeButton');
+        const markAsReadBtn = document.querySelector('.mark-as-read');
 
+        // Start the experience
         revealBtn.addEventListener('click', () => {
-            // 1. Play the music
             bgMusic.play().catch(error => console.log("Audio play failed:", error));
-            
-            // 2. Fade out the dark intro screen
             introScreen.style.opacity = '0';
             
-            // 3. Remove intro screen from the page after it fades out
             setTimeout(() => {
                 introScreen.style.display = 'none';
             }, 1500);
 
-            // 4. Fade in the Cake and the Text
             canvasContainer.style.opacity = '1';
             wishContainer.classList.add('revealed');
         });
 
+        // Open Modal when Heart Icon is clicked
+        notificationIcon.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+            notificationIcon.style.display = 'none'; 
+        });
+
+        // The safe function to close the modal
+        const closeModal = (e) => {
+            e.preventDefault(); 
+            modalOverlay.style.display = 'none';
+        };
+
+        // Attach close function ONLY to the "X" and "Mark as Read" buttons
+        closeBtn.addEventListener('click', closeModal);
+        markAsReadBtn.addEventListener('click', closeModal);
+        // Notice we did NOT attach closeModal to the 'Take a Look' button so it acts as a normal link!
 
         // --- 3D Scene Setup ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 2, 5);
+        camera.position.set(0, 2, 6);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -325,30 +691,32 @@
         const loader = new GLTFLoader();
 
         loader.load(
-            'cake.glb', 
+            'cake-v1.glb', 
             function (gltf) {
-                const cake = gltf.scene;
+                cakeModel = gltf.scene;
                 
-                let box = new THREE.Box3().setFromObject(cake);
+                let box = new THREE.Box3().setFromObject(cakeModel);
                 let size = box.getSize(new THREE.Vector3());
 
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 3 / (maxDim || 1); 
-                cake.scale.set(scale, scale, scale);
+                const scale = 4.5 / (maxDim || 1); 
+                cakeModel.scale.set(scale, scale, scale);
 
-                box = new THREE.Box3().setFromObject(cake);
+                box = new THREE.Box3().setFromObject(cakeModel);
                 const center = box.getCenter(new THREE.Vector3());
 
-                cake.position.x -= center.x;
-                cake.position.y -= center.y;
-                cake.position.z -= center.z;
+                cakeModel.position.x -= center.x;
+                cakeModel.position.y -= center.y;
+                cakeModel.position.z -= center.z;
 
-                cake.position.y -= 0.5;
+                cakeModel.position.y -= 0.8; 
+
+                cakeModel.userData.baseY = cakeModel.position.y;
 
                 controls.target.set(0, -0.5, 0);
                 controls.update();
 
-                scene.add(cake);
+                scene.add(cakeModel);
             },
             undefined,
             function (error) {
@@ -356,6 +724,40 @@
             }
         );
 
+        // --- INTERACTION (Raycaster for Clicks) ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('pointerdown', (event) => {
+            if (introScreen.style.display !== 'none' || modalOverlay.style.display === 'flex') return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            if (cakeModel) {
+                const intersects = raycaster.intersectObject(cakeModel, true);
+                if (intersects.length > 0) {
+                    
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#d81b60', '#ffb6c1', '#ffffff', '#ffc800']
+                    });
+
+                    if (!isBouncing) {
+                        isBouncing = true;
+                        bounceTime = 0;
+                    }
+
+                    notificationIcon.style.display = 'flex';
+                }
+            }
+        });
+
+        // --- Handle Window Resizing ---
         window.addEventListener('resize', onWindowResize, false);
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -363,9 +765,21 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        // --- Animation Loop ---
         function animate() {
             requestAnimationFrame(animate);
             controls.update(); 
+
+            if (isBouncing && cakeModel) {
+                bounceTime += 0.15; 
+                cakeModel.position.y = cakeModel.userData.baseY + Math.sin(bounceTime) * 0.4; 
+                
+                if (bounceTime > Math.PI) {
+                    isBouncing = false;
+                    cakeModel.position.y = cakeModel.userData.baseY; 
+                }
+            }
+
             renderer.render(scene, camera);
         }
         
